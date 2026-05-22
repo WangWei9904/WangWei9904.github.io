@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shx Viewer - AutoCAD SHX File Viewer for Windows</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #87CEEB;
+            color: #1a1a2e;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .features {
+            padding: 40px;
+        }
+
+        .features h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .screenshots {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .screenshots h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .screenshot-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .screenshot-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: zoomIn 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 1001;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #bbb;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .about {
+            padding: 40px;
+        }
+
+        .about h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+
+        .about p {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            background: #87CEEB;
+            color: #1a1a2e;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .features, .screenshots, .about {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Shx Viewer</h1>
+            <p>AutoCAD SHX File Viewer for Windows - The Professional Lightweight Utility for CAD SHX File Inspection & Validation!</p>
+        </div>
+
+        <div class="about">
+            <h2>About Shx Viewer</h2>
+            <p>Exclusively engineered for CAD drafters, design specialists, and structural/mechanical engineers, this precision tool enables seamless opening, high-fidelity previewing, and in-depth inspection of SHX files—all in seconds, eliminating the need to launch resource-heavy full-featured CAD suites.</p>
+            <p>Precisely render all glyphs, symbols, and shapes in SHX files, ensure visual consistency across drawing sets, facilitate accurate SHX file selection for layer-based drafting, and enable seamless integration into your existing CAD project workflow. Critically, its read-only architecture guarantees SHX file integrity—your shape/font assets remain unaltered, secure, and intact, supporting error-free pre-deployment validation before incorporating into production drawings, blueprints, or design schematics.</p>
+            <p>Streamline your CAD workflow by eliminating the inefficiency of launching cumbersome, resource-intensive CAD software for basic SHX validation. Shx Viewer delivers professional-grade SHX asset verification, tailored to the rigorous demands of drafting, design, and engineering.</p>
+        </div>
+
+        <div class="features">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i>📁</i>
+                    <h3>Open and view all SHX files</h3>
+                    <p>Seamlessly open and inspect any SHX file format with ease</p>
+                </div>
+                <div class="feature-card">
+                    <i>🔤</i>
+                    <h3>Multiple File Support</h3>
+                    <p>Support shape file, unifont file and bigfont file</p>
+                </div>
+                <div class="feature-card">
+                    <i>⚡</i>
+                    <h3>Lightweight & Fast</h3>
+                    <p>No ads, no bundled software, lightweight and fast</p>
+                </div>
+                <div class="feature-card">
+                    <i>🪟</i>
+                    <h3>Windows Compatible</h3>
+                    <p>Fully compatible with Windows 10 / Windows 11</p>
+                </div>
+                <div class="feature-card">
+                    <i>🔧</i>
+                    <h3>Font Problem Solver</h3>
+                    <p>Solve CAD drawing missing font and garbled text problems quickly</p>
+                </div>
+                <div class="feature-card">
+                    <i>👷</i>
+                    <h3>Professional Tool</h3>
+                    <p>Ideal for CAD engineers, drafters, designers and anyone who needs to manage and preview SHX font libraries daily</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="screenshots">
+            <h2>Screenshots</h2>
+            <div class="screenshots-grid">
+                <div class="screenshot-card">
+                    <img src="1.png" alt="Shx Viewer Screenshot 1">
+                </div>
+                <div class="screenshot-card">
+                    <img src="2.png" alt="Shx Viewer Screenshot 2">
+                </div>
+                <div class="screenshot-card">
+                    <img src="3.png" alt="Shx Viewer Screenshot 3">
+                </div>
+                <div class="screenshot-card">
+                    <img src="4.png" alt="Shx Viewer Screenshot 4">
+                </div>
+                <div class="screenshot-card">
+                    <img src="5.png" alt="Shx Viewer Screenshot 5">
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Shx Viewer - Lightweight Windows desktop tool for viewing and browsing AutoCAD SHX font files directly.</p>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="modal-close">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <script>
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        const closeBtn = document.querySelector('.modal-close');
+        const screenshots = document.querySelectorAll('.screenshot-card img');
+
+        screenshots.forEach(img => {
+            img.addEventListener('click', function() {
+                modal.style.display = 'block';
+                modalImg.src = this.src;
+            });
+        });
+
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
